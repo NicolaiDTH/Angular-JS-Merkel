@@ -1,31 +1,63 @@
 angular.module("todoListApp", [])
-.controller('mainCtrl', function($scope) {
+
+.controller('mainCtrl', function($scope, dataService) {
+	
+	$scope.addTodo = function() {
+		var todo = {name: "This is a new todo."};
+		$scope.todos.push(todo);
+	};
+	
 	$scope.learningNgChange = function() {
-		console.log("An input changed")
+		console.log("An input changed");
 	};
 	
-	 $scope.todos = [
-    {"name": "clean the house"}, 
-    {"name": "water the dog"}, 
-    {"name": "feed the lawn"},
-    {"name": "pay dem bills"},
-    {"name": "run"}, 
-    {"name": "swim"}
-  ]
+	$scope.helloConsole = dataService.helloConsole;
 	
-})
-
-.controller('coolCtrl', function($scope) {
-	$scope.whoAmI = function() {
-		console.log("hello there, this is the coolCtrl function!");
-	};
+	dataService.getTodos(function(response){
+		
+			console.log(response.data);
+		
+			$scope.todos = response.data;
+		});
+		
+	$scope.deleteTodo = function(todo, index){
+		dataService.deleteTodo(todo);
+		$scope.todos.splice(index, 1);
+	};	
 	
-	$scope.helloWorld = function() {
-		console.log("This is not the main ctrl!");
+	$scope.saveTodo = function(todo) {
+		dataService.saveTodo(todo);
 	}
+	
 })
 
-.controller("imASibling", function($scope) {
+.service('dataService', function($http){
+	this.helloWorld = function() {
+		console.log("This is the data service's method!");
+	};
 	
-	$scope.foobar = 1234;
+		
+	this.getTodos = function(callback) {
+		
+			$http.get('mock/todos.json').then(callback)
+	}
+	
+	this.deleteTodo	= function(todo) {
+		
+		console.log("The" + todo.name + " has been deleted!")
+		
+	};
+	
+	this.saveTodo = function(todo) {
+		
+		console.log("The" + todo.name + " todo has been saved!")
+		
+	};
+	
+	this.helloConsole = function() {
+		
+		console.log('This is the hello console service!');
+		
+	}
+	
 });
